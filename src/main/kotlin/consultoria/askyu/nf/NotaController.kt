@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
-@RestController
-@RequestMapping("/nota-fiscal")
+//@RestController
+//@RequestMapping("/nota-fiscal")
 class NotaController(
     val s3Service: S3Service
 ) {

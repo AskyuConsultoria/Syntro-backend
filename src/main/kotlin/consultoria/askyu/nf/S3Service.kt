@@ -9,7 +9,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import java.io.InputStream
 import java.nio.file.Paths
 
-@Service
+//@Service
 class S3Service {
 
     @Value("\${aws.s3.bucket-name}")
