@@ -8,9 +8,9 @@ import org.apache.pdfbox.rendering.PDFRenderer
 import java.util.regex.Pattern
 
 @RestController
-@RequestMapping("/api/ocr")
+@RequestMapping("/ocr")
 class OcrController {
-    @PostMapping("/process-pdf")
+    @PostMapping("/upload-pdf")
     fun processPdf(@RequestBody file: MultipartFile): Map<String, String?> {
         val text = extractTextFromPdf(file.bytes)
         return extractFields(text)
