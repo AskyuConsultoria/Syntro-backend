@@ -1,4 +1,4 @@
-package consultoria.askyu.nf
+package consultoria.askyu.syntro
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

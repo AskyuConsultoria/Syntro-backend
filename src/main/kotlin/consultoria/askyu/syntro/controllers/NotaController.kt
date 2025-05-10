@@ -1,5 +1,6 @@
-package consultoria.askyu.nf
+package consultoria.askyu.syntro.controllers
 
+import consultoria.askyu.syntro.services.S3Service
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile

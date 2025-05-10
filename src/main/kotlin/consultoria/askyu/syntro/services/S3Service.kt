@@ -1,13 +1,10 @@
-package consultoria.askyu.nf
+package consultoria.askyu.syntro.services
 
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
-import java.io.InputStream
-import java.nio.file.Paths
 
 //@Service
 class S3Service {
