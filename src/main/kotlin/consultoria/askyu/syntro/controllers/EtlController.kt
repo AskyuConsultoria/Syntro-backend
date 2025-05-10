@@ -4,9 +4,8 @@ import consultoria.askyu.syntro.dominio.Etl
 import consultoria.askyu.syntro.interfaces.IController
 import consultoria.askyu.syntro.services.EtlService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/etl")
@@ -27,5 +26,11 @@ class EtlController(
     fun buscar(): ResponseEntity<List<Etl>> {
         val listaInsighs = service.busdarInsighs()
         return ResponseEntity.status(200).body(listaInsighs)
+    }
+
+    @PostMapping
+    fun inserir(@RequestBody arquivoDeEtl: MultipartFile): ResponseEntity<Etl> {
+        val service = service.inserir(arquivoDeEtl)
+        return ResponseEntity.status(200).body(service)
     }
 }

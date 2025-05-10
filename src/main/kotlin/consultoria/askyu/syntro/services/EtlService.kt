@@ -5,6 +5,7 @@ import consultoria.askyu.syntro.interfaces.IService
 import consultoria.askyu.syntro.repositorys.EtlRepository
 import org.modelmapper.ModelMapper
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 
 @Service
 class EtlService(
@@ -14,5 +15,9 @@ class EtlService(
 
     fun busdarInsighs():List<Etl>{
         return repository.findAll()
+    }
+
+    fun inserir(arquivoDeEtl: MultipartFile): List<Etl> {
+        return mutableListOf<Etl>()
     }
 }

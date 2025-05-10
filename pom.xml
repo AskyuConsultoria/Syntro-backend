@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>consultoria.askyu</groupId>
-	<artifactId>nf</artifactId>
+	<artifactId>syntro</artifactId>
 	<version>0.0.1</version>
 	<name>nf</name>
 	<description>Backend para projeto de notas fiscais</description>
