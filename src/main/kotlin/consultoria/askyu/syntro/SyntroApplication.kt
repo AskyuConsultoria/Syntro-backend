@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class NfApplication
+class SyntroApplication
 
 fun main(args: Array<String>) {
-	 runApplication<NfApplication>(*args)
+	 runApplication<SyntroApplication>(*args)
 }

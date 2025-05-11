@@ -1,11 +1,12 @@
 package consultoria.askyu.syntro.controllers
 
-import consultoria.askyu.syntro.dominio.Etl
+import consultoria.askyu.syntro.dominio.NotaFiscal
 import consultoria.askyu.syntro.interfaces.IController
 import consultoria.askyu.syntro.services.EtlService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.io.File
 
 @RestController
 @RequestMapping("/etl")
@@ -23,14 +24,14 @@ class EtlController(
 //        ],
 //    )
     @GetMapping
-    fun buscar(): ResponseEntity<List<Etl>> {
-        val listaInsighs = service.busdarInsighs()
-        return ResponseEntity.status(200).body(listaInsighs)
+    fun buscar(): ResponseEntity<List<NotaFiscal>> {
+        val listaInsights = service.busdarInsights()
+        return ResponseEntity.status(200).body(listaInsights)
     }
 
     @PostMapping
-    fun inserir(@RequestBody arquivoDeEtl: MultipartFile): ResponseEntity<Etl> {
-        val service = service.inserir(arquivoDeEtl)
+    fun inserir(@RequestBody arquivoDeNotas: File): ResponseEntity<List<NotaFiscal>> {
+        val service = service.inserir(arquivoDeNotas)
         return ResponseEntity.status(200).body(service)
     }
 }

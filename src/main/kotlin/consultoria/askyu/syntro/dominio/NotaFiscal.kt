@@ -7,8 +7,16 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 
 @Entity
-data class Etl(
+data class NotaFiscal(
     @field:Id
     @field:GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id:Int? = null
+    var id:Int? = null,
+    val cnpjContratante: String,
+    val nomeEmpresa: String,
+    val cnpjFornecedor: String,
+    val enderecoFornecedor: String,
+    val dataVencimento: String,
+    val numero: String,
+    val descricao: String,
+    val valorTotal: String
 ): IDomain()

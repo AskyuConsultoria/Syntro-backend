@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile
 
 //@RestController
 //@RequestMapping("/nota-fiscal")
-class NotaController(
+class NotaPdfController(
     val s3Service: S3Service
 ) {
 
