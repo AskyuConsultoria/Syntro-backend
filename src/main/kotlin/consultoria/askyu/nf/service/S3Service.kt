@@ -1,4 +1,4 @@
-package consultoria.askyu.nf
+package consultoria.askyu.nf.service
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -9,7 +9,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import java.io.InputStream
 import java.nio.file.Paths
 
-//@Service
+@Service
 class S3Service {
 
     @Value("\${aws.s3.bucket-name}")
