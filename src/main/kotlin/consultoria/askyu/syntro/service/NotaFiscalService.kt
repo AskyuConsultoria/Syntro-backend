@@ -8,17 +8,16 @@ import org.springframework.stereotype.Service
 
 @Service
 class NotaFiscalService(
-    val repository: NotaFiscalRepository,
+    private val repository: NotaFiscalRepository,
     val mapper: ModelMapper = ModelMapper()
 ): IService {
-
-    fun cadastrar(notaFiscal: NotaFiscal): NotaFiscal{
-        return repository.save(notaFiscal)
+    fun cadastrar(nota: NotaFiscal): NotaFiscal {
+        return repository.save(nota)
     }
 
-    fun buscar(): MutableList<NotaFiscal>{
-        val listaNotasFiscais = repository.findAll()
-        listValidation(listaNotasFiscais)
-        return listaNotasFiscais
+    fun buscarTodas(): MutableList<NotaFiscal>{
+        val notas = repository.findAll()
+        listValidation(notas)
+        return notas
     }
 }
