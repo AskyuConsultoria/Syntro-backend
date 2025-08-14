@@ -1,6 +1,6 @@
-package consultoria.askyu.nf.repository
+package consultoria.askyu.syntro.repository
 
-import consultoria.askyu.nf.dominio.SolicitacaoServico
+import consultoria.askyu.syntro.dominio.SolicitacaoServico
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

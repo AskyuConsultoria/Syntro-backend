@@ -1,4 +1,4 @@
-package consultoria.askyu.nf.dominio
+package consultoria.askyu.syntro.dominio
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

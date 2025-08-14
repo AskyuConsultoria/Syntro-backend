@@ -1,7 +1,7 @@
-package consultoria.askyu.nf.controller
+package consultoria.askyu.syntro.controller
 
-import consultoria.askyu.nf.dominio.SolicitacaoServico
-import consultoria.askyu.nf.service.SolicitacaoServicoService
+import consultoria.askyu.syntro.dominio.SolicitacaoServico
+import consultoria.askyu.syntro.service.SolicitacaoServicoService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.DeleteMapping

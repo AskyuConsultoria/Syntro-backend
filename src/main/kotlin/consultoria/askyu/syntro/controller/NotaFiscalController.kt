@@ -1,8 +1,8 @@
-package consultoria.askyu.nf.controller
+package consultoria.askyu.syntro.controller
 
-import consultoria.askyu.nf.dominio.NotaFiscal
-import consultoria.askyu.nf.service.NotaFiscalService
-import consultoria.askyu.nf.service.S3Service
+import consultoria.askyu.syntro.dominio.NotaFiscal
+import consultoria.askyu.syntro.service.NotaFiscalService
+import consultoria.askyu.syntro.service.S3Service
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*

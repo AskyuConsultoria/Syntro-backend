@@ -1,11 +1,9 @@
-package consultoria.askyu.nf.service
+package consultoria.askyu.syntro.service
 
-import consultoria.askyu.nf.abstratas.Servico
-import consultoria.askyu.nf.dominio.NotaFiscal
-import consultoria.askyu.nf.repository.NotaFiscalRepository
-import org.aspectj.weaver.ast.Not
+import consultoria.askyu.syntro.abstratas.Servico
+import consultoria.askyu.syntro.dominio.NotaFiscal
+import consultoria.askyu.syntro.repository.NotaFiscalRepository
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.RequestBody
 
 @Service
 class NotaFiscalService(

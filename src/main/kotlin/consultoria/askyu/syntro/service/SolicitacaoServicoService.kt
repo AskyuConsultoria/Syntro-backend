@@ -1,14 +1,11 @@
-package consultoria.askyu.nf.service
+package consultoria.askyu.syntro.service
 
-import consultoria.askyu.nf.abstratas.Servico
-import consultoria.askyu.nf.dominio.SolicitacaoServico
-import consultoria.askyu.nf.repository.NotaFiscalRepository
-import consultoria.askyu.nf.repository.SolicitacaoServicoRepository
+import consultoria.askyu.syntro.abstratas.Servico
+import consultoria.askyu.syntro.dominio.SolicitacaoServico
+import consultoria.askyu.syntro.repository.NotaFiscalRepository
+import consultoria.askyu.syntro.repository.SolicitacaoServicoRepository
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.server.ResponseStatusException
 
 
 @Service

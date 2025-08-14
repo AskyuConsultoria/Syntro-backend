@@ -1,4 +1,4 @@
-package consultoria.askyu.nf.abstratas
+package consultoria.askyu.syntro.abstratas
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.http.HttpStatusCode
