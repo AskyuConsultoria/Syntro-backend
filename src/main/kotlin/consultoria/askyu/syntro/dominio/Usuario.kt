@@ -1,22 +1,23 @@
 package consultoria.askyu.syntro.dominio
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.*
 
 @Entity
 data class Usuario(
     @field:Id
     @field:GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
-    var nome_usuario: String? = null,
-    var nome_completo: String? = null,
+    @Column(name = "nome_usuario")
+    var nomeUsuario: String? = null,
+    @Column(name = "nome_completo")
+    var nomeCompleto: String? = null,
     var email: String? = null,
     var cargo: String? = null,
-    var representante_interno: Int? = null,
-    var representa_externo: Int? = null,
+    @Column(name = "representante_interno")
+    var representanteInterno: Int? = null,
+    @Column(name = "representa_externo")
+    var representaExterno: Int? = null,
     var senha: String? = null,
-    var id_departamento: Int? = null
+    @Column(name = "id_departamento")
+    var idDepartamento: Int? = null
 )

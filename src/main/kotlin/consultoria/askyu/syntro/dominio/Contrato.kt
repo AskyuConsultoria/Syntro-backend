@@ -1,24 +1,27 @@
 package consultoria.askyu.syntro.dominio
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
 import java.sql.Timestamp
-import java.time.LocalDate
 
 @Entity
 data class Contrato (
     @field:Id
     @field:GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
-    var nome_servico: String? = null,
+    @Column(name = "nome_servico")
+    var nomeServico: String? = null,
     var descricao: String? = null,
-    var data_realizacao: Timestamp? = null,
-    var status_contrato: Boolean? = null,
-    var tempo_contrato: String? = null,
+    @Column(name = "data_realizacao")
+    var dataRealizacao: Timestamp? = null,
+    @Column(name = "status_contrato")
+    var statusContrato: Boolean? = null,
+    @Column(name = "tempo_contrato")
+    var tempoContrato: String? = null,
     var valor: Double? = null,
-    var nome_moeda: String? = null,
-    var id_departamento: Int? = null,
-    var id_empresa: Int? = null,
+    @Column(name = "nome_moeda")
+    var nomeMoeda: String? = null,
+    @Column(name = "id_departamento")
+    var idDepartamento: Int? = null,
+    @Column(name = "id_empresa")
+    var idEmpresa: Int? = null,
 )
