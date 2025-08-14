@@ -13,7 +13,7 @@ interface IService{
 
     fun idValidation(repository: JpaRepository<*, Int>, id: Int){
         if(!repository.existsById(id)){
-            throw ResponseStatusException(HttpStatusCode.valueOf(404), "Valor de repositorio $repository não encontrado.")
+            throw ResponseStatusException(HttpStatusCode.valueOf(400), "Id Não encontrado.")
         }
     }
 

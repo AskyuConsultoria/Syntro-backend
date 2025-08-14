@@ -2,6 +2,7 @@ package consultoria.askyu.syntro.controller
 
 import consultoria.askyu.syntro.dominio.Usuario
 import consultoria.askyu.syntro.dto.LoginRequest
+import consultoria.askyu.syntro.dto.LoginResponse
 import consultoria.askyu.syntro.service.UsuarioService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -31,8 +32,24 @@ class UsuarioController(
     }
 
     @PostMapping("/login")
-    fun login(@RequestBody request: LoginRequest): ResponseEntity<Usuario> {
+    fun login(@RequestBody request: LoginRequest): ResponseEntity<LoginResponse> {
         val usuario = usuarioService.login(request.login, request.password)
         return ResponseEntity.ok(usuario)
     }
+
+    @DeleteMapping("/{id}")
+    fun deletar(@PathVariable id: Int): ResponseEntity<Void> {
+        usuarioService.deletar(id)
+        return ResponseEntity.noContent().build()
+    }
+
+    @PatchMapping("/{id}")
+    fun atualizarCampo(
+        @PathVariable id: Int,
+        @RequestBody updates: Map<String, Any>
+    ): ResponseEntity<Usuario> {
+        val usuarioAtualizado = usuarioService.atualizarCampos(id, updates)
+        return ResponseEntity.ok(usuarioAtualizado)
+    }
+
 }

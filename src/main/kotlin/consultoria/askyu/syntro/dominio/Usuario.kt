@@ -14,9 +14,9 @@ data class Usuario(
     var email: String? = null,
     var cargo: String? = null,
     @Column(name = "representante_interno")
-    var representanteInterno: Int? = null,
-    @Column(name = "representa_externo")
-    var representaExterno: Int? = null,
+    var representanteInterno: Boolean? = null,
+    @Column(name = "representante_externo")
+    var representanteExterno: Boolean? = null,
     var senha: String? = null,
     @Column(name = "id_departamento")
     var idDepartamento: Int? = null
