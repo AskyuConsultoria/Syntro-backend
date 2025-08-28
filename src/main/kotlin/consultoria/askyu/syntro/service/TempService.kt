@@ -1,7 +1,9 @@
 package consultoria.askyu.syntro.service
 
+import consultoria.askyu.syntro.dominio.Temp
 import consultoria.askyu.syntro.dominio.Usuario
 import consultoria.askyu.syntro.dto.LoginResponse
+import consultoria.askyu.syntro.dto.TempDto
 import consultoria.askyu.syntro.`interface`.IService
 import consultoria.askyu.syntro.repository.TempRepository
 import org.modelmapper.ModelMapper
@@ -15,8 +17,8 @@ class TempService(
     val mapper: ModelMapper = ModelMapper()
 ): IService {
 
-    fun cadastrar(temp: Temp): Temp {
-        return repository.save(temp)
+    fun add(temp: TempDto): Temp {
+        return repository.save(mapper.map(temp, Temp::class.java))
     }
 
     fun buscarTodos(): MutableList<Temp>{
@@ -25,13 +27,24 @@ class TempService(
         return temps
     }
 
-    fun buscarTemp(chaveTemp: String): Temp{
-        return repository.findByChave(chaveTemp) ?: throw ResponseStatusException(HttpStatusCode.valueOf(404), "Temp não encontrado!")
+    fun buscarPorUsuario(id:Int): List<Temp>{
+        val temps = repository.findByIdUsuario(id)
+        listValidation(temps)
+        return temps
     }
 
-    fun deletar(idTemp: Int) {
-        idValidation(repository, idTemp)
-        repository.delete(repository.findById(idTemp).get())
+    fun buscarTemp(chave: String): Temp{
+        return repository.findByChave(chave) ?: throw ResponseStatusException(HttpStatusCode.valueOf(404), "Temp não encontrado!")
+    }
+
+    fun buscarPorChave(chave: String): Temp {
+        var temp = repository.findByChave(chave) ?: throw ResponseStatusException(HttpStatusCode.valueOf(404), "Temp não encontrado!")
+        return temp
+    }
+
+    fun deletar(chave: String) {
+        var temp = repository.findByChave(chave) ?: throw ResponseStatusException(HttpStatusCode.valueOf(404), "Temp não encontrado!")
+        repository.delete(temp)
     }
 
 }

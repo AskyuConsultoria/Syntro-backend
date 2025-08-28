@@ -11,7 +11,7 @@ data class NotaFiscal(
     @field:GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
     @Column(name = "numero_identificador")
-    var numeroIdentificador: Int? = null,
+    var numeroIdentificador: String? = null,
     var descricao: String? = null,
     @Column(name = "valor_total")
     var valorTotal: Double? = null,
@@ -36,5 +36,9 @@ data class NotaFiscal(
     var idContrato: Int? = null,
     var cnpjEmitente: String? = null,
     var inscricaoMunicipal: String? = null,
-    var tipoNota: String? = null
+    var tipoNota: String? = null,
+    @Column(name = "id_empresa")
+    var idEmpresa: Int? = null,
+    @Column(name = "id_usuario")
+    var idUsuario: Int? = null
 )

@@ -1,6 +1,6 @@
 package consultoria.askyu.syntro.dto
 
-data class LoginResponse(
+data class TempDto(
     var chave: String,
     var descricao: String
 )

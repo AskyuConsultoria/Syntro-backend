@@ -1,32 +1,61 @@
 package consultoria.askyu.syntro.service
 
 import consultoria.askyu.syntro.dominio.NotaFiscal
+import consultoria.askyu.syntro.dto.TempDto
 import consultoria.askyu.syntro.repository.NotaFiscalRepository
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.sourceforge.tess4j.Tesseract
 import net.sourceforge.tess4j.TesseractException
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
 import org.modelmapper.ModelMapper
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.awt.image.BufferedImage
 import java.io.InputStream
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.util.UUID
+import kotlin.collections.forEach
 
 @Service
 class OcrService(
     private val tessDataPath: String = "C:/Tesseract-OCR/tessdata",
-    private val notaFiscalService: NotaFiscalService
+    private val notaFiscalService: NotaFiscalService,
+    private val tempService: TempService
 ) {
 
-    fun processarNotaFiscal(pdfInputStream: InputStream): NotaFiscal {
+    fun processarNotaFiscal(pdfInputStream: InputStream, uuid: String): NotaFiscal {
+        tempService.add(TempDto(uuid, "Um processamento de nota fiscal"))
         println("Iniciando OCR inteligente da nota fiscal...")
         val texto = extrairTextoPdf(pdfInputStream)
         println("Texto extraído: ${texto.length} caracteres")
         val nota = inferirCamposNotaFiscal(texto)
         validarCamposObrigatorios(nota)
-        println("OCR inteligente concluído com sucesso")
+        println("OCR concluído com sucesso")
+        tempService.deletar(uuid)
         return nota
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun processarNotasFiscais(files: List<MultipartFile>): List<String> {
+        val listaUUIDs = mutableListOf<String>()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            files.forEach { file ->
+                val uuid = UUID.randomUUID().toString()
+                listaUUIDs.add(uuid)
+
+                launch {
+                    processarNotaFiscal(file.inputStream, uuid)
+                }
+            }
+        }
+
+        return listaUUIDs
     }
 
     private fun extrairTextoPdf(pdfInputStream: InputStream): String {
@@ -62,7 +91,7 @@ class OcrService(
         linhas.forEach { linha ->
             when {
                 linha.matches(Regex("(?i).*Nº\\s*[:\\-]?\\s*\\d+.*")) -> {
-                    nota.numeroIdentificador = Regex("\\d+").find(linha)?.value?.toIntOrNull()
+                    nota.numeroIdentificador = Regex("\\d+").find(linha)?.value?.toString()
                 }
                 linha.matches(Regex("(?i).*Total.*\\$?\\s*[\\d.,]+.*")) -> {
                     nota.valorTotal = Regex("([\\d.,]+)").find(linha)?.value?.replace(".", "")?.replace(",", ".")?.toDoubleOrNull()

@@ -8,5 +8,7 @@ data class Temp (
     @field:GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
     var chave: String? = null,
-    var descricao: String? = null
+    var descricao: String? = null,
+    @Column(name = "id_usuario")
+    var idUsuario: Int? = null
 )

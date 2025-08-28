@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.util.UUID
 
 @Controller
 @RequestMapping("/nota-fiscal")
@@ -30,12 +31,42 @@ class NotaFiscalController(
         return ResponseEntity.ok(notas)
     }
 
+    @GetMapping("/empresa")
+    fun buscarTodosPorEmpresa(@RequestParam empresaId: Int): ResponseEntity<List<NotaFiscal>> {
+        val notas = notaFiscalService.buscarPorIdEmpresa(empresaId)
+        return ResponseEntity.ok(notas)
+    }
+
+    @GetMapping("/{numeroIdentificador}")
+    fun buscarPorIdentificador(@PathVariable numeroIdentificador: String): ResponseEntity<NotaFiscal?> {
+        val nota = notaFiscalService.buscarPorNumeroIdentificador(numeroIdentificador)
+        return ResponseEntity.ok(nota)
+    }
+
+    @PutMapping("/{idNota}")
+    fun AtualizarContratoNota(@PathVariable idNota: Int, @RequestParam idContrato: Int): ResponseEntity<NotaFiscal?> {
+        return ResponseEntity.ok(notaFiscalService.atualizarCampoContrato(idNota, idContrato))
+    }
+
     @PostMapping("/upload")
-    fun uploadNotaFiscal(@RequestParam("file") file: MultipartFile): ResponseEntity<NotaFiscal> {
+    fun uploadNotaFiscal(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
         if (file.isEmpty) return ResponseEntity.badRequest().build()
         return try {
-            val nota = ocrService.processarNotaFiscal(file.inputStream)
-            ResponseEntity.ok(nota)
+            var uuid = UUID.randomUUID().toString()
+            val nota = ocrService.processarNotaFiscal(file.inputStream, uuid)
+            ResponseEntity.ok(uuid)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ResponseEntity.badRequest().body(null)
+        }
+    }
+
+    @PostMapping("/upload-multiple")
+    fun uploadMultiplasNotaFiscal(@RequestParam("file") file: List<MultipartFile>): ResponseEntity<List<String>> {
+        if (file.isEmpty()) return ResponseEntity.badRequest().build()
+        return try {
+            val notas = ocrService.processarNotasFiscais(file)
+            ResponseEntity.ok(notas)
         } catch (e: Exception) {
             e.printStackTrace()
             ResponseEntity.badRequest().body(null)

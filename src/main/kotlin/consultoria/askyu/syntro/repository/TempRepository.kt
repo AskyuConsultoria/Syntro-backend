@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface TempRepository: JpaRepository<Temp, Int> {
 
-    fun findByChave(chave: String): Temp?
+    fun findByChave(chave: String): Temp
+    fun findByIdUsuario(idUsuario: Int): List<Temp>
 }
