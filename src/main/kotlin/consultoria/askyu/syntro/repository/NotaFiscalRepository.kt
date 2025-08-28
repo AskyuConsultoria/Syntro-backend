@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface NotaFiscalRepository: JpaRepository<NotaFiscal, Int>{
     fun findByIdEmpresa(empresaId: Int): List<NotaFiscal>
-    fun findByNumeroIdentificador(numeroIdentificador: String): NotaFiscal
+    fun findByNumeroIdentificador(numeroIdentificador: String): NotaFiscal?
 }
