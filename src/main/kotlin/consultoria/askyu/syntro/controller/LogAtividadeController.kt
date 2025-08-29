@@ -4,7 +4,6 @@ import consultoria.askyu.syntro.dominio.LogAtividade
 import consultoria.askyu.syntro.service.LogAtividadeService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.security.Timestamp
 
 @RestController
 @RequestMapping("/comentar")
@@ -13,7 +12,7 @@ class LogAtividadeController(
 ) {
 
     @PostMapping
-    fun comentar(@RequestParam atividade: LogAtividade): ResponseEntity<LogAtividade> {
+    fun comentar(@RequestBody atividade: LogAtividade): ResponseEntity<LogAtividade> {
         val novoTemp = logAtividadeService.cadastrar(atividade)
         return ResponseEntity.ok(novoTemp)
     }
@@ -25,7 +24,7 @@ class LogAtividadeController(
     }
 
     @GetMapping("/data-hora")
-    fun buscarPorDataHora(@RequestParam dataHoraComeco: Timestamp, @RequestParam dataHoraFim: Timestamp): ResponseEntity<List<LogAtividade>> {
+    fun buscarPorDataHora(@RequestParam dataHoraComeco: String, @RequestParam dataHoraFim: String): ResponseEntity<List<LogAtividade>> {
         val logAtividade = logAtividadeService.buscarPorDataHora(dataHoraComeco, dataHoraFim)
         return ResponseEntity.ok(logAtividade)
     }

@@ -5,7 +5,8 @@ import consultoria.askyu.syntro.`interface`.IService
 import consultoria.askyu.syntro.repository.LogAtividadeRepository
 import org.modelmapper.ModelMapper
 import org.springframework.stereotype.Service
-import java.security.Timestamp
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
 
 @Service
 class LogAtividadeService(
@@ -24,14 +25,22 @@ class LogAtividadeService(
     }
 
     fun deletar(id: Int) {
+        idValidation(repository, id)
         var logAtividade = repository.findById(id).get()
         repository.delete(logAtividade)
     } 
 
-    fun buscarPorDataHora(dataHoraComeco:Timestamp, dataHoraFim: Timestamp): List<LogAtividade> {
-        val logs = repository.findByDataHoraBetween(dataHoraComeco, dataHoraFim)
+    fun buscarPorDataHora(dataHoraComeco:String, dataHoraFim: String): List<LogAtividade> {
+        val logs = repository.findByDataHoraBetween(stringParaTimestamp(dataHoraComeco), stringParaTimestamp(dataHoraFim))
         listValidation(logs)
         return logs
     }
+
+    fun stringParaTimestamp(dataStr: String, formato: String = "yyyy-MM-dd HH:mm:ss"): Timestamp {
+        val sdf = SimpleDateFormat(formato)
+        val date = sdf.parse(dataStr)
+        return Timestamp(date.time)
+    }
+
 
 }
