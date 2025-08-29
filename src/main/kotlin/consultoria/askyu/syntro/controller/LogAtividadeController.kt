@@ -23,9 +23,9 @@ class LogAtividadeController(
         return ResponseEntity.ok(logAtividade)
     }
 
-    @GetMapping("/data-hora")
-    fun buscarPorDataHora(@RequestParam dataHoraComeco: String, @RequestParam dataHoraFim: String): ResponseEntity<List<LogAtividade>> {
-        val logAtividade = logAtividadeService.buscarPorDataHora(dataHoraComeco, dataHoraFim)
+    @GetMapping("/data-hora/{idNota}")
+    fun buscarPorDataHora(@RequestParam dataHoraComeco: String, @RequestParam dataHoraFim: String, @PathVariable idNota:Int): ResponseEntity<List<LogAtividade>> {
+        val logAtividade = logAtividadeService.buscarPorDataHora(dataHoraComeco, dataHoraFim, idNota)
         return ResponseEntity.ok(logAtividade)
     }
 

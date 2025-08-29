@@ -28,8 +28,8 @@ class OcrService(
     private val tempService: TempService
 ) {
 
-    fun processarNotaFiscal(pdfInputStream: InputStream, uuid: String): NotaFiscal {
-        tempService.add(TempDto(uuid, "Um processamento de nota fiscal"))
+    fun processarNotaFiscal(pdfInputStream: InputStream, uuid: String, idUsuario: Int): NotaFiscal {
+        tempService.add(TempDto(uuid, "Um processamento de nota fiscal", idUsuario))
         println("Iniciando OCR inteligente da nota fiscal...")
         val texto = extrairTextoPdf(pdfInputStream)
         println("Texto extraído: ${texto.length} caracteres")
@@ -41,7 +41,7 @@ class OcrService(
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun processarNotasFiscais(files: List<MultipartFile>): List<String> {
+    fun processarNotasFiscais(files: List<MultipartFile>, idUsuario: Int): List<String> {
         val listaUUIDs = mutableListOf<String>()
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -50,7 +50,7 @@ class OcrService(
                 listaUUIDs.add(uuid)
 
                 launch {
-                    processarNotaFiscal(file.inputStream, uuid)
+                    processarNotaFiscal(file.inputStream, uuid, idUsuario)
                 }
             }
         }

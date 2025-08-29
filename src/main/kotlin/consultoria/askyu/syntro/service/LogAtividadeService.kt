@@ -30,8 +30,8 @@ class LogAtividadeService(
         repository.delete(logAtividade)
     } 
 
-    fun buscarPorDataHora(dataHoraComeco:String, dataHoraFim: String): List<LogAtividade> {
-        val logs = repository.findByDataHoraBetween(stringParaTimestamp(dataHoraComeco), stringParaTimestamp(dataHoraFim))
+    fun buscarPorDataHora(dataHoraComeco:String, dataHoraFim: String, idNota:Int): List<LogAtividade> {
+        val logs = repository.findByNotaFiscalIdAndDataHoraBetween(idNota, stringParaTimestamp(dataHoraComeco), stringParaTimestamp(dataHoraFim))
         listValidation(logs)
         return logs
     }

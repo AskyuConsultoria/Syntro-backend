@@ -49,11 +49,11 @@ class NotaFiscalController(
     }
 
     @PostMapping("/upload")
-    fun uploadNotaFiscal(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
+    fun uploadNotaFiscal(@RequestBody file: MultipartFile, @RequestParam idUsuario: Int): ResponseEntity<String> {
         if (file.isEmpty) return ResponseEntity.badRequest().build()
         return try {
             var uuid = UUID.randomUUID().toString()
-            val nota = ocrService.processarNotaFiscal(file.inputStream, uuid)
+            val nota = ocrService.processarNotaFiscal(file.inputStream, uuid, idUsuario)
             ResponseEntity.ok(uuid)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -62,10 +62,10 @@ class NotaFiscalController(
     }
 
     @PostMapping("/upload-multiple")
-    fun uploadMultiplasNotaFiscal(@RequestParam("file") file: List<MultipartFile>): ResponseEntity<List<String>> {
+    fun uploadMultiplasNotaFiscal(@RequestBody file: List<MultipartFile>, @RequestParam idUsuario:Int): ResponseEntity<List<String>> {
         if (file.isEmpty()) return ResponseEntity.badRequest().build()
         return try {
-            val notas = ocrService.processarNotasFiscais(file)
+            val notas = ocrService.processarNotasFiscais(file, idUsuario)
             ResponseEntity.ok(notas)
         } catch (e: Exception) {
             e.printStackTrace()

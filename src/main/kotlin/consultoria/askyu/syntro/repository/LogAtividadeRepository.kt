@@ -8,5 +8,5 @@ import java.sql.Timestamp
 @Repository
 interface LogAtividadeRepository: JpaRepository<LogAtividade, Int> {
     fun findByNotaFiscalId(notaFiscalId: Int): List<LogAtividade>
-    fun findByDataHoraBetween(dataHoraComeco: Timestamp, dataHoraFim: Timestamp): List<LogAtividade>
+    fun findByNotaFiscalIdAndDataHoraBetween(notaFiscalId:Int, dataHoraComeco: Timestamp, dataHoraFim: Timestamp): List<LogAtividade>
 }
