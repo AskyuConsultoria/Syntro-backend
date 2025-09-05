@@ -1,9 +1,10 @@
 package consultoria.askyu.syntro.dominio
 
 import jakarta.persistence.*
+import java.time.Instant
 
 @Entity
-data class Usuario(
+open class Usuario(
     @field:Id
     @field:GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
@@ -20,4 +21,6 @@ data class Usuario(
     var senha: String? = null,
     @Column(name = "id_departamento")
     var idDepartamento: Int? = null
-)
+){
+    constructor() : this(null, null, null, null, null, null, null, null, null)
+}

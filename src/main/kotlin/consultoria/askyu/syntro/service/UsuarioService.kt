@@ -75,4 +75,8 @@ class UsuarioService(
         val regex = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$")
         return this.matches(regex)
     }
+
+    fun buscarPorEmail(email: String): Usuario? {
+        return repository.findByEmailIgnoreCase(email)
+    }
 }

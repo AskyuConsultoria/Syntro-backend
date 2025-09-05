@@ -48,6 +48,33 @@
 			<scope>runtime</scope>
 		</dependency>
 
+
+<!--			&lt;!&ndash; Segurança &ndash;&gt;-->
+<!--			<dependency>-->
+<!--				<groupId>org.springframework.boot</groupId>-->
+<!--				<artifactId>spring-boot-starter-security</artifactId>-->
+<!--			</dependency>-->
+
+			<!-- Argon2 para senhas -->
+			<dependency>
+				<groupId>de.mkammerer</groupId>
+				<artifactId>argon2-jvm</artifactId>
+				<version>2.11</version>
+			</dependency>
+
+			<!-- E-mail -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-mail</artifactId>
+			</dependency>
+
+			<!-- Testes -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<scope>test</scope>
+			</dependency>
+
 		<dependency>
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
