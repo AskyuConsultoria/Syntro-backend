@@ -1,4 +1,4 @@
-package consultoria.askyu.syntro.service
+package consultoria.askyu.syntro.utils
 
 import java.security.MessageDigest
 import java.security.SecureRandom
