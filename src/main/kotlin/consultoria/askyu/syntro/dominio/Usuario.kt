@@ -19,5 +19,7 @@ data class Usuario(
     var representanteExterno: Boolean? = null,
     var senha: String? = null,
     @Column(name = "id_departamento")
-    var idDepartamento: Int? = null
+    var idDepartamento: Int? = null,
+    @Column(name = "id_empresa")
+    var idEmpresa: Int? = null
 )

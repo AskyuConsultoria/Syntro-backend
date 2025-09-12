@@ -31,6 +31,18 @@ class UsuarioController(
         return ResponseEntity.ok(usuario)
     }
 
+    @GetMapping("/representante-interno")
+    fun buscarPorEmpresaAndInterno(@RequestParam id: Int): ResponseEntity<List<Usuario>> {
+        val usuario = usuarioService.buscarPorIdEmpresaAndRepInterno(id)
+        return ResponseEntity.ok(usuario)
+    }
+
+    @GetMapping("/representante-externo")
+    fun buscarPorEmpresaAndExterno(@RequestParam id: Int): ResponseEntity<List<Usuario>> {
+        val usuario = usuarioService.buscarPorIdEmpresaAndRepExterno(id)
+        return ResponseEntity.ok(usuario)
+    }
+
     @PostMapping("/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<LoginResponse> {
         val usuario = usuarioService.login(request.login, request.password)

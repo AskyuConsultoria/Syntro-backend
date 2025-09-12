@@ -3,6 +3,7 @@ package consultoria.askyu.syntro.service
 import consultoria.askyu.syntro.dominio.Usuario
 import consultoria.askyu.syntro.dto.LoginResponse
 import consultoria.askyu.syntro.`interface`.IService
+import consultoria.askyu.syntro.repository.EmpresaRepository
 import consultoria.askyu.syntro.repository.UsuarioRepository
 import org.modelmapper.ModelMapper
 import org.springframework.http.HttpStatusCode
@@ -28,6 +29,18 @@ class UsuarioService(
     fun buscarPorId(idUsuario:Int): Usuario{
         idValidation(repository, idUsuario)
         return repository.findById(idUsuario).get()
+    }
+
+    fun buscarPorIdEmpresaAndRepInterno(idEmpresa:Int):List<Usuario>{
+        var reps = repository.findByIdEmpresaAndRepresentanteInterno(idEmpresa, true)
+        listValidation(reps)
+        return reps
+    }
+
+    fun buscarPorIdEmpresaAndRepExterno(idEmpresa:Int):List<Usuario>{
+        var reps = repository.findByIdEmpresaAndRepresentanteExterno(idEmpresa, true)
+        listValidation(reps)
+        return reps
     }
 
     fun login(login: String, password: String): LoginResponse {
