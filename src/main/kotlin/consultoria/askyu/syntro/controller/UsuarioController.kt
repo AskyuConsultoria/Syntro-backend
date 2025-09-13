@@ -5,6 +5,7 @@ import consultoria.askyu.syntro.dto.EsqueceuSenhaRequest
 import consultoria.askyu.syntro.dto.LoginRequest
 import consultoria.askyu.syntro.dto.LoginResponse
 import consultoria.askyu.syntro.dto.ResetSenhaRequest
+import consultoria.askyu.syntro.service.PasswordHasher
 import consultoria.askyu.syntro.service.UsuarioService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -12,7 +13,8 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/user")
 class UsuarioController(
-    private val usuarioService: UsuarioService
+    private val usuarioService: UsuarioService,
+    private val passwordHasher: PasswordHasher
 ) {
 
     @PostMapping
@@ -45,9 +47,10 @@ class UsuarioController(
         return ResponseEntity.ok(usuario)
     }
 
+    @CrossOrigin(origins = ["*"], allowedHeaders = ["*"], methods = [RequestMethod.POST, RequestMethod.OPTIONS])
     @PostMapping("/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<LoginResponse> {
-        val usuario = usuarioService.login(request.login, request.password)
+        val usuario = usuarioService.login(request.login!!, request.password!!)
         return ResponseEntity.ok(usuario)
     }
 
@@ -66,6 +69,7 @@ class UsuarioController(
         return ResponseEntity.ok(usuarioAtualizado)
     }
 
+    @CrossOrigin(origins = ["*"], allowedHeaders = ["*"], methods = [RequestMethod.POST, RequestMethod.OPTIONS])
     @PostMapping("/esqueceu-senha")
     fun esqueceu(
         @RequestBody req: EsqueceuSenhaRequest,
@@ -79,6 +83,8 @@ class UsuarioController(
         return ResponseEntity.ok(mapOf("message" to "Se o e-mail existir, enviaremos instruções."))
     }
 
+
+    @CrossOrigin(origins = ["*"], allowedHeaders = ["*"], methods = [RequestMethod.POST, RequestMethod.OPTIONS])
     @PostMapping("/resetar-senha")
     fun reset(@RequestBody req: ResetSenhaRequest): ResponseEntity<Map<String, String>> {
         usuarioService.resetarSenha(req.token, req.novaSenha)

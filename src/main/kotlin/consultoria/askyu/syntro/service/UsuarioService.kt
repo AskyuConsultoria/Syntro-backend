@@ -10,8 +10,11 @@ import consultoria.askyu.syntro.utils.PasswordUtils
 import consultoria.askyu.syntro.utils.TokenUtils
 import org.modelmapper.ModelMapper
 import org.springframework.http.HttpStatusCode
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException.Forbidden
 import org.springframework.web.server.ResponseStatusException
+import java.lang.Exception
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -28,6 +31,7 @@ class UsuarioService(
     private val qtdMinutos: Long = 15
 
     fun cadastrar(usuario: Usuario): Usuario {
+        usuario.senha = passwordHasher.hash(usuario.senha!!)
         return repository.save(usuario)
     }
 
@@ -59,12 +63,12 @@ class UsuarioService(
             throw ResponseStatusException(HttpStatusCode.valueOf(400), "Os Dados preenchidos estão incompletos")
         }
 
-        val usuario = if (login.isEmail()) {
-            repository.findByEmailAndSenhaEquals(login, password)
-        } else {
-            repository.findByNomeUsuarioAndSenhaEquals(login, password)
+        val usuario = if (login.isEmail()) { repository.findByEmailIgnoreCase(login) }
+        else {
+            repository.findByNomeUsuario(login)
         } ?: throw ResponseStatusException(HttpStatusCode.valueOf(404), "Usuário não encontrado!")
 
+        verificarSenha(usuario.senha!!, password)
         return mapper.map(usuario, LoginResponse::class.java)
     }
 
@@ -120,7 +124,7 @@ class UsuarioService(
                 usuarioDeCriacao = usuarioDeCriacao,
             )
             tokenRepository.save(novoToken)
-            val restUrl = "https://lorem.com/reset?token=$token" // Mudar Utilizando o IP de forma dinâmica (Via INFRA)
+            val restUrl = "https://localhost:3333/password_recovery?token=$token" // Mudar Utilizando o IP de forma dinâmica (Via INFRA)
 
             emailService.enviarResetDeSenha(usuario.email!!, restUrl, qtdMinutos)
         }
@@ -142,5 +146,12 @@ class UsuarioService(
 
         usuario.senha = passwordHasher.hash(novaSenha)
         cadastrar(usuario)
+    }
+
+    fun verificarSenha(hash: String, senha: String): Boolean{
+        if(!passwordHasher.verify(hash, senha)){
+            throw ResponseStatusException(HttpStatusCode.valueOf(403), "Usuário ou senha inválidos")
+        }
+        else return true
     }
 }
