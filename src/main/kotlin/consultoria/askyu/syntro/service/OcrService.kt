@@ -1,6 +1,7 @@
 package consultoria.askyu.syntro.service
 
 import consultoria.askyu.syntro.dominio.NotaFiscal
+import consultoria.askyu.syntro.dominio.Temp
 import consultoria.askyu.syntro.dto.TempDto
 import consultoria.askyu.syntro.repository.NotaFiscalRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -29,7 +30,7 @@ class OcrService(
 ) {
 
     fun processarNotaFiscal(pdfInputStream: InputStream, uuid: String, idUsuario: Int): NotaFiscal {
-        tempService.add(TempDto(uuid, "Um processamento de nota fiscal", idUsuario))
+        tempService.add(Temp(null, uuid, "Um processamento de nota fiscal", idUsuario))
         println("Iniciando OCR inteligente da nota fiscal...")
         val texto = extrairTextoPdf(pdfInputStream)
         println("Texto extraído: ${texto.length} caracteres")
@@ -67,6 +68,7 @@ class OcrService(
                 val image: BufferedImage = renderer.renderImageWithDPI(i, 300f)
                 sb.append(extrairTextoImagem(image))
             }
+            print(sb.toString())
             return sb.toString()
         }
     }
@@ -85,62 +87,153 @@ class OcrService(
 
     private fun inferirCamposNotaFiscal(texto: String): NotaFiscal {
         val nota = NotaFiscal()
-        val linhas = texto.lines().map { it.trim() }.filter { it.isNotEmpty() }
 
-        // Heurísticas para identificar campos
-        linhas.forEach { linha ->
-            when {
-                linha.matches(Regex("(?i).*Nº\\s*[:\\-]?\\s*\\d+.*")) -> {
-                    nota.numeroIdentificador = Regex("\\d+").find(linha)?.value?.toString()
+        // Normaliza linhas (remove múltiplos espaços / NBSP etc)
+        val rawLines = texto.lines()
+            .map { it.replace("\u00A0", " ").replace(Regex("\\s+"), " ").trim() }
+            .filter { it.isNotEmpty() }
+
+        // Precompila regex úteis
+        val cnpjRegex = Regex("\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}")
+        val moneyRegex = Regex("R?\\$?\\s*([0-9]{1,3}(?:[.,][0-9]{3})*(?:[.,][0-9]{2}))")
+        val multiDateTimeRegex = Regex("(\\d+)\\D*(\\d{2}/\\d{2}/\\d{4}).*?(\\d{2}/\\d{2}/\\d{4}).*?(\\d{2}:\\d{2}:\\d{2})")
+        val dateOnlyRegex = Regex("\\d{2}/\\d{2}/\\d{4}")
+        val nbsRegex = Regex("NBS\\s*[:\\-]?\\s*(\\d+)", RegexOption.IGNORE_CASE)
+
+        // Date formats com timezone explícito (evita deslocamentos inesperados)
+        val sdfDate = SimpleDateFormat("dd/MM/yyyy")
+        sdfDate.timeZone = java.util.TimeZone.getTimeZone("America/Sao_Paulo")
+        val sdfDateTime = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+        sdfDateTime.timeZone = java.util.TimeZone.getTimeZone("America/Sao_Paulo")
+
+        // 1) coleta todos os CNPJs em ordem de aparição (usa depois)
+        val foundCnpjs = mutableListOf<String>()
+        rawLines.forEach { linha ->
+            cnpjRegex.findAll(linha).forEach { foundCnpjs.add(it.value) }
+        }
+        if (foundCnpjs.size >= 1) nota.cnpjEmitente = foundCnpjs[0]
+
+        // 2) percorre linhas com índice para poder olhar a linha seguinte
+        for ((i, linha) in rawLines.withIndex()) {
+            val lower = linha.lowercase()
+
+            // --- Número da NFS-e + Competência + Data/Hora (cabeçalho em uma linha, valores na próxima)
+            if (lower.contains("número da nfs-e") && i + 1 < rawLines.size) {
+                val valores = rawLines[i + 1].replace("[^0-9/: \\-:]".toRegex(), " ")
+                val m = multiDateTimeRegex.find(valores)
+                if (m != null) {
+                    // grupo 1 = número, 2 = competência (data), 3 = data emissão, 4 = hora emissão
+                    nota.numeroIdentificador = m.groupValues[1]
+                    try {
+                        nota.dataVencimento = Timestamp(sdfDate.parse(m.groupValues[2]).time) // competência
+                    } catch (_: Exception) { /* ignore */ }
+                    try {
+                        val dt = sdfDateTime.parse("${m.groupValues[3]} ${m.groupValues[4]}")
+                        nota.dataEmissao = Timestamp(dt.time)
+                    } catch (_: Exception) { /* ignore */ }
+                } else {
+                    // fallback: se não casar perfeitamente, tenta extrair número + primeira data + hora
+                    val number = Regex("\\d+").find(valores)?.value
+                    val firstDate = dateOnlyRegex.find(valores)?.value
+                    val time = Regex("\\d{2}:\\d{2}:\\d{2}").find(valores)?.value
+                    if (number != null) nota.numeroIdentificador = number
+                    if (firstDate != null) {
+                        try { nota.dataVencimento = Timestamp(sdfDate.parse(firstDate).time) } catch (_: Exception) {}
+                    }
+                    if (firstDate != null && time != null) {
+                        try {
+                            nota.dataEmissao = Timestamp(sdfDateTime.parse("$firstDate $time").time)
+                        } catch (_: Exception) {}
+                    }
                 }
-                linha.matches(Regex("(?i).*Total.*\\$?\\s*[\\d.,]+.*")) -> {
-                    nota.valorTotal = Regex("([\\d.,]+)").find(linha)?.value?.replace(".", "")?.replace(",", ".")?.toDoubleOrNull()
+            }
+
+            // --- Valor do Serviço (cabeçalho -> valor na linha seguinte)
+            if (lower.contains("valor do serviço")) {
+                val possivel = rawLines.getOrNull(i + 1) ?: linha
+                val mm = moneyRegex.find(possivel) ?: moneyRegex.find(linha)
+                mm?.let {
+                    nota.valorTotal = it.groupValues[1].replace(".", "").replace(",", ".").toDoubleOrNull()
                 }
-                linha.matches(Regex("(?i).*Cálculo.*\\$?\\s*[\\d.,]+.*")) -> {
-                    nota.baseCalculo = Regex("([\\d.,]+)").find(linha)?.value?.replace(".", "")?.replace(",", ".")?.toDoubleOrNull()
+            }
+
+            // --- Valor Total da NFS-e (resumo) - às vezes está 1-2 linhas abaixo
+            if (lower.contains("valor total da nfs-e") && nota.valorTotal == null) {
+                // tenta as próximas 3 linhas por segurança
+                for (j in 1..3) {
+                    val possivel = rawLines.getOrNull(i + j) ?: ""
+                    val mm = moneyRegex.find(possivel)
+                    if (mm != null) {
+                        nota.valorTotal = mm.groupValues[1].replace(".", "").replace(",", ".").toDoubleOrNull()
+                        break
+                    }
                 }
-                linha.matches(Regex("(?i).*INSS.*\\$?\\s*[\\d.,]+.*")) -> {
-                    nota.valorInss = Regex("([\\d.,]+)").find(linha)?.value?.replace(".", "")?.replace(",", ".")?.toDoubleOrNull()
+            }
+
+            // --- Descrição do Serviço (cabeçalho -> conteúdo na próxima linha)
+            if (lower.contains("descrição do serviço")) {
+                val next = rawLines.getOrNull(i + 1)?.trim()
+                if (!next.isNullOrBlank()) {
+                    nota.descricao = next
+                } else {
+                    // fallback: se a mesma linha tiver algo após dois-pontos/hífen
+                    val after = linha.substringAfter(":", "").substringAfter("-", "").trim()
+                    if (after.isNotEmpty()) nota.descricao = after
                 }
-                linha.matches(Regex("(?i).*IPTU.*\\$?\\s*[\\d.,]+.*")) -> {
-                    nota.creditoIptu = Regex("([\\d.,]+)").find(linha)?.value?.replace(".", "")?.replace(",", ".")?.toDoubleOrNull()
+            } else if (lower.startsWith("descrição") && nota.descricao.isNullOrBlank()) {
+                val after = linha.substringAfter(":", "").substringAfter("-", "").trim()
+                if (after.isNotEmpty() && !after.equals("descrição do serviço", ignoreCase = true)) {
+                    nota.descricao = after
                 }
-                linha.matches(Regex("(?i).*Valor Deducoes.*\\$?\\s*[\\d.,]+.*")) -> {
-                    nota.creditoIptu = Regex("([\\d.,]+)").find(linha)?.value?.replace(".", "")?.replace(",", ".")?.toDoubleOrNull()
+            }
+
+            // --- Informações complementares (cabeçalho -> próxima linha)
+            if ((lower.contains("informações complementares") || lower.contains("informacao complementar"))) {
+                val next = rawLines.getOrNull(i + 1)?.trim()
+                if (!next.isNullOrBlank()) {
+                    // tenta extrair NBS se existir
+                    val m = nbsRegex.find(next)
+                    nota.informacaoAdicional = m?.groupValues?.get(1) ?: next
                 }
-                linha.matches(Regex("(?i).*Alíquota.*\\d+%.*")) -> {
-                    nota.aliquota = Regex("(\\d+(?:,\\d+)?)%").find(linha)?.groupValues?.get(1)?.replace(",", ".")?.toDoubleOrNull()
+            }
+
+            // --- Outros valores (dota fallback: se ainda não pegou valorTotal, captura primeiro R$ válido que aparecer após as seções de valores)
+            if (nota.valorTotal == null) {
+                val mm = moneyRegex.find(linha)
+                mm?.let {
+                    nota.valorTotal = it.groupValues[1].replace(".", "").replace(",", ".").toDoubleOrNull()
                 }
-                linha.matches(Regex("(?i).*Emissão.*\\d{2}/\\d{2}/\\d{4}.*")) -> {
-                    nota.dataEmissao = Timestamp(SimpleDateFormat("dd/MM/yyyy").parse(Regex("\\d{2}/\\d{2}/\\d{4}").find(linha)!!.value).time)
-                }
-                linha.matches(Regex("(?i).*Vencimento.*\\d{2}/\\d{2}/\\d{4}.*")) -> {
-                    nota.dataVencimento = Timestamp(SimpleDateFormat("dd/MM/yyyy").parse(Regex("\\d{2}/\\d{2}/\\d{4}").find(linha)!!.value).time)
-                }
-                linha.matches(Regex("(?i).*CNPJ.*\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}.*")) -> {
-                    nota.cnpjEmitente = Regex("\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}").find(linha)?.value
-                }
-                linha.matches(Regex("(?i).*Moeda.*")) -> {
-                    nota.nomeMoeda = linha.split(":"," ").last()
-                }
-                linha.matches(Regex("(?i).*Descrição.*")) -> {
-                    nota.descricao = linha.split(":", "-").last().trim()
-                }
-                linha.matches(Regex("(?i).*Informação Adicional.*")) -> {
-                    nota.informacaoAdicional = linha.split(":", "-").last().trim()
-                }
-                linha.matches(Regex("(?i).*Tipo de Nota.*")) -> {
-                    nota.tipoNota = linha.split(":", "-").last().trim()
-                }
-                linha.matches(Regex("(?i).*Contrato.*\\d+.*")) -> {
-                    nota.idContrato = Regex("\\d+").find(linha)?.value?.toIntOrNull()
-                }
+            }
+
+            // --- Exemplos de campos já existentes (mantive para não perder dados antigos)
+            // Base de cálculo, INSS, IPTU, Valor Deduções, Aliquota, Tipo de Nota, Contrato
+            if (linha.contains("Cálculo", ignoreCase = true)) {
+                moneyRegex.find(linha)?.let { nota.baseCalculo = it.groupValues[1].replace(".", "").replace(",", ".").toDoubleOrNull() }
+            }
+            if (linha.contains("INSS", ignoreCase = true)) {
+                moneyRegex.find(linha)?.let { nota.valorInss = it.groupValues[1].replace(".", "").replace(",", ".").toDoubleOrNull() }
+            }
+            if (linha.contains("IPTU", ignoreCase = true)) {
+                moneyRegex.find(linha)?.let { nota.creditoIptu = it.groupValues[1].replace(".", "").replace(",", ".").toDoubleOrNull() }
+            }
+            if (linha.contains("Valor Deducoes", ignoreCase = true) || linha.contains("Deduções", ignoreCase = true)) {
+                moneyRegex.find(linha)?.let { nota.valorDeducoes = it.groupValues[1].replace(".", "").replace(",", ".").toDoubleOrNull() }
+            }
+            if (linha.contains("Alíquota", ignoreCase = true) || linha.contains("Aliquota", ignoreCase = true)) {
+                val a = Regex("(\\d+(?:[.,]\\d+)?)%").find(linha)?.groupValues?.get(1)
+                a?.let { nota.aliquota = it.replace(",", ".").toDoubleOrNull() }
+            }
+            if (linha.contains("Contrato", ignoreCase = true)) {
+                Regex("\\d+").find(linha)?.value?.toIntOrNull()?.let { nota.idContrato = it }
             }
         }
 
-        notaFiscalService.cadastrar(nota);
+        // salva e debug
+        notaFiscalService.cadastrar(nota)
+        println("OCR EXTRAIDO -> numero=${nota.numeroIdentificador} valor=${nota.valorTotal} emissao=${nota.dataEmissao} venc=${nota.dataVencimento} descricao=${nota.descricao} cnpjEmitente=${nota.cnpjEmitente} info=${nota.informacaoAdicional}")
         return nota
     }
+
 
     private fun validarCamposObrigatorios(nota: NotaFiscal) {
         val erros = mutableListOf<String>()

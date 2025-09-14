@@ -13,7 +13,7 @@ class TempController(
 ) {
 
     @PostMapping
-    fun inserir(@RequestBody temp: TempDto): ResponseEntity<Temp?> {
+    fun inserir(@RequestBody temp: Temp): ResponseEntity<Temp?> {
         val novoTemp = tempService.add(temp)
         return ResponseEntity.ok(novoTemp)
     }

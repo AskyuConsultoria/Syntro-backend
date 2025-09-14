@@ -17,8 +17,8 @@ class TempService(
     val mapper: ModelMapper = ModelMapper()
 ): IService {
 
-    fun add(temp: TempDto): Temp {
-        return repository.save(mapper.map(temp, Temp::class.java))
+    fun add(temp: Temp): Temp {
+        return repository.save(temp)
     }
 
     fun buscarTodos(): MutableList<Temp>{
