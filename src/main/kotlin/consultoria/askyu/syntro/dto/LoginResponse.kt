@@ -1,11 +1,11 @@
 package consultoria.askyu.syntro.dto
 
 data class LoginResponse(
-    var nomeUsuario: String,
-    var nomeCompleto: String,
-    var email: String,
-    var cargo: String,
-    var representanteInterno: Boolean,
-    var representanteExterno: Boolean,
-    var idDepartamento: Int
+    var nomeUsuario: String? = null,
+    var nomeCompleto: String? = null,
+    var email: String? = null,
+    var cargo: String? = null,
+    var representanteInterno: Boolean = false,
+    var representanteExterno: Boolean = false,
+    var idDepartamento: Int? = null
 )

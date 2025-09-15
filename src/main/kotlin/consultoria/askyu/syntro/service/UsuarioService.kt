@@ -28,6 +28,7 @@ class UsuarioService(
     private val qtdMinutos: Long = 15
 
     fun cadastrar(usuario: Usuario): Usuario {
+        usuario.senha = passwordHasher.hash(usuario.senha!!)
         return repository.save(usuario)
     }
 
@@ -59,12 +60,12 @@ class UsuarioService(
             throw ResponseStatusException(HttpStatusCode.valueOf(400), "Os Dados preenchidos estão incompletos")
         }
 
-        val usuario = if (login.isEmail()) {
-            repository.findByEmailAndSenhaEquals(login, password)
-        } else {
-            repository.findByNomeUsuarioAndSenhaEquals(login, password)
+        val usuario = if (login.isEmail()) { repository.findByEmailIgnoreCase(login) }
+        else {
+            repository.findByNomeUsuario(login)
         } ?: throw ResponseStatusException(HttpStatusCode.valueOf(404), "Usuário não encontrado!")
 
+        passwordUtils.verificarSenha(usuario.senha!!, password, passwordHasher)
         return mapper.map(usuario, LoginResponse::class.java)
     }
 

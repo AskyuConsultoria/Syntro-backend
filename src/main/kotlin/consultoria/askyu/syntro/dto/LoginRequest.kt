@@ -1,3 +1,6 @@
 package consultoria.askyu.syntro.dto
 
-data class LoginRequest(val login: String, val password: String)
+class LoginRequest(val login: String? = null, val password: String? = null)
+{
+    constructor(): this(null, null)
+}

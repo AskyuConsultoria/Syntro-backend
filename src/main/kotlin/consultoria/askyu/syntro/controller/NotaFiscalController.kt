@@ -53,8 +53,8 @@ class NotaFiscalController(
         if (file.isEmpty) return ResponseEntity.badRequest().build()
         return try {
             var uuid = UUID.randomUUID().toString()
-            val nota = ocrService.processarNotaFiscal(file.inputStream, uuid, idUsuario)
-            ResponseEntity.ok(uuid)
+            val nota = ocrService.processarNotaFiscalv2(file.inputStream, uuid, idUsuario)
+            ResponseEntity.ok(nota)
         } catch (e: Exception) {
             e.printStackTrace()
             ResponseEntity.badRequest().body(null)

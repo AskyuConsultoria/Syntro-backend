@@ -45,9 +45,10 @@ class UsuarioController(
         return ResponseEntity.ok(usuario)
     }
 
+    @CrossOrigin(origins = ["*"], allowedHeaders = ["*"], methods = [RequestMethod.POST, RequestMethod.OPTIONS])
     @PostMapping("/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<LoginResponse> {
-        val usuario = usuarioService.login(request.login, request.password)
+        val usuario = usuarioService.login(request.login!!, request.password!!)
         return ResponseEntity.ok(usuario)
     }
 
@@ -66,6 +67,7 @@ class UsuarioController(
         return ResponseEntity.ok(usuarioAtualizado)
     }
 
+    @CrossOrigin(origins = ["*"], allowedHeaders = ["*"], methods = [RequestMethod.POST, RequestMethod.OPTIONS])
     @PostMapping("/esqueceu-senha")
     fun esqueceu(
         @RequestBody req: EsqueceuSenhaRequest,
@@ -79,10 +81,12 @@ class UsuarioController(
         return ResponseEntity.ok(mapOf("message" to "Se o e-mail existir, enviaremos instruções."))
     }
 
+    @CrossOrigin(origins = ["*"], allowedHeaders = ["*"], methods = [RequestMethod.POST, RequestMethod.OPTIONS])
     @PostMapping("/resetar-senha")
     fun reset(@RequestBody req: ResetSenhaRequest): ResponseEntity<Map<String, String>> {
         usuarioService.resetarSenha(req.token, req.novaSenha)
         return ResponseEntity.ok(mapOf("message" to "Senha redefinida com sucesso."))
     }
+
 
 }
