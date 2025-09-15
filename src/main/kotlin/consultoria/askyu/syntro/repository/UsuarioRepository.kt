@@ -12,4 +12,5 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
     fun findByEmailIgnoreCase(email:String?): Usuario?
     fun findByIdEmpresaAndRepresentanteExterno(idEmpresa:Int, representante:Boolean): List<Usuario>
     fun findByIdEmpresaAndRepresentanteInterno(idEmpresa:Int, representante:Boolean): List<Usuario>
+    fun findByNomeUsuario(nome:String?): Usuario?
 }
