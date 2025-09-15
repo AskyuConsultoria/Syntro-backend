@@ -54,6 +54,7 @@ class NotaFiscalController(
         return try {
             var uuid = UUID.randomUUID().toString()
             val nota = ocrService.processarNotaFiscalv2(file.inputStream, uuid, idUsuario)
+            s3Service.uploadArquivo(file)
             ResponseEntity.ok(nota)
         } catch (e: Exception) {
             e.printStackTrace()

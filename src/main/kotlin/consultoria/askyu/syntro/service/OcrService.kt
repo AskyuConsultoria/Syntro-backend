@@ -28,8 +28,7 @@ class OcrService(
     @Value("\${tesseract.ocr-path}") private val tessDataPath: String,
     private val notaFiscalService: NotaFiscalService,
     private val tempService: TempService,
-    private val usuarioService: UsuarioService,
-    private val s3Service: S3Service
+    private val usuarioService: UsuarioService
 ) {
 
     fun processarNotaFiscal(pdfInputStream: InputStream, uuid: String, idUsuario: Int): NotaFiscal {
