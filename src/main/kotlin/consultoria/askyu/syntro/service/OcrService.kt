@@ -42,6 +42,17 @@ class OcrService(
     }
 
     @OptIn(DelicateCoroutinesApi::class)
+    fun processarNotaFiscalv2(pdfInputStream: InputStream, uuid: String, idUsuario: Int): String {
+        GlobalScope.launch(Dispatchers.IO) {
+            launch {
+                processarNotaFiscal(pdfInputStream, uuid, idUsuario)
+            }
+        }
+
+        return uuid
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
     fun processarNotasFiscais(files: List<MultipartFile>, idUsuario: Int): List<String> {
         val listaUUIDs = mutableListOf<String>()
 
