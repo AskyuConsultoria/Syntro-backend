@@ -12,6 +12,7 @@ import net.sourceforge.tess4j.TesseractException
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
 import org.modelmapper.ModelMapper
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.awt.image.BufferedImage
@@ -23,9 +24,11 @@ import kotlin.collections.forEach
 
 @Service
 class OcrService(
-    private val tessDataPath: String = "C:/Tesseract-OCR/tessdata",
+    @Value("\${tesseract.ocr-path}") private val tessDataPath: String,
     private val notaFiscalService: NotaFiscalService,
-    private val tempService: TempService
+    private val tempService: TempService,
+    private val usuarioService: UsuarioService,
+    private val s3Service: S3Service
 ) {
 
     fun processarNotaFiscal(pdfInputStream: InputStream, uuid: String, idUsuario: Int): NotaFiscal {
@@ -35,6 +38,8 @@ class OcrService(
         println("Texto extraído: ${texto.length} caracteres")
         val nota = inferirCamposNotaFiscal(texto)
         validarCamposObrigatorios(nota)
+        nota.idUsuario = idUsuario
+        nota.idEmpresa = usuarioService.buscarPorId(idUsuario).idEmpresa
         println("OCR concluído com sucesso")
         tempService.deletar(uuid)
         return nota
