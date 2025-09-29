@@ -170,6 +170,7 @@ class OcrService(
                     }
                 }
             }
+            
 
             // --- Valor do Serviço (cabeçalho -> valor na linha seguinte)
             if (lower.contains("valor do serviço")) {

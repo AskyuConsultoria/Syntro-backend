@@ -6,6 +6,7 @@ data class LoginResponse(
     var nomeCompleto: String? = null,
     var email: String? = null,
     var cargo: String? = null,
+    var permissao: String? = null,
     var representanteInterno: Boolean = false,
     var representanteExterno: Boolean = false,
     var idDepartamento: Int? = null,

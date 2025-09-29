@@ -13,6 +13,7 @@ data class Usuario(
     var nomeCompleto: String? = null,
     var email: String? = null,
     var cargo: String? = null,
+    var permissao: String? = null,
     @Column(name = "representante_interno")
     var representanteInterno: Boolean? = null,
     @Column(name = "representante_externo")
