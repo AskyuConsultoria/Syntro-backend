@@ -85,8 +85,8 @@ class UsuarioService(
                 "email" -> usuario.email = valor as String
                 "senha" -> usuario.senha = valor as String
                 "cargo" -> usuario.cargo = valor as String
-                "representanteInterno" -> usuario.representanteInterno = valor as Boolean
-                "representanteExterno" -> usuario.representanteExterno = valor as Boolean
+                "representanteInterno" -> usuario.auditor = valor as Boolean
+                "representanteExterno" -> usuario.emissor = valor as Boolean
                 "idDepartamento" -> usuario.idDepartamento = (valor as Number).toInt()
                 else -> throw ResponseStatusException(HttpStatusCode.valueOf(400), "Campo inválido: $campo")
             }
