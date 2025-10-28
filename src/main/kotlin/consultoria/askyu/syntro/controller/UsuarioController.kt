@@ -33,15 +33,27 @@ class UsuarioController(
         return ResponseEntity.ok(usuario)
     }
 
-    @GetMapping("/representante-interno")
-    fun buscarPorEmpresaAndInterno(@RequestParam id: Int): ResponseEntity<List<Usuario>> {
+    @GetMapping("/auditor/{id}")
+    fun buscarPorEmpresaAndAuditor(@PathVariable id: Int): ResponseEntity<List<Usuario>> {
         val usuario = usuarioService.buscarPorIdEmpresaAndRepInterno(id)
         return ResponseEntity.ok(usuario)
     }
 
-    @GetMapping("/representante-externo")
-    fun buscarPorEmpresaAndExterno(@RequestParam id: Int): ResponseEntity<List<Usuario>> {
+    @GetMapping("/emissor/{id}")
+    fun buscarPorEmpresaAndEmissor(@PathVariable id: Int): ResponseEntity<List<Usuario>> {
         val usuario = usuarioService.buscarPorIdEmpresaAndRepExterno(id)
+        return ResponseEntity.ok(usuario)
+    }
+
+    @GetMapping("/emissor")
+    fun buscarPorEmissor(@RequestParam id: Int): ResponseEntity<List<Usuario>> {
+        val usuario = usuarioService.buscarPorEmissor(id)
+        return ResponseEntity.ok(usuario)
+    }
+
+    @GetMapping("/auditor")
+    fun buscarPorAudiotor(): ResponseEntity<List<Usuario>> {
+        val usuario = usuarioService.buscarPorAuditor()
         return ResponseEntity.ok(usuario)
     }
 

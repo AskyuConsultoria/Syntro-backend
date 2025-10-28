@@ -44,13 +44,25 @@ class UsuarioService(
     }
 
     fun buscarPorIdEmpresaAndRepInterno(idEmpresa:Int):List<Usuario>{
-        var reps = repository.findByIdEmpresaAndRepresentanteInterno(idEmpresa, true)
+        var reps = repository.findByIdEmpresaAndAuditor(idEmpresa, true)
         listValidation(reps)
         return reps
     }
 
     fun buscarPorIdEmpresaAndRepExterno(idEmpresa:Int):List<Usuario>{
-        var reps = repository.findByIdEmpresaAndRepresentanteExterno(idEmpresa, true)
+        var reps = repository.findByIdEmpresaAndEmissor(idEmpresa, true)
+        listValidation(reps)
+        return reps
+    }
+
+    fun buscarPorAuditor():List<Usuario>{
+        var reps = repository.findByAuditor(true)
+        listValidation(reps)
+        return reps
+    }
+
+    fun buscarPorEmissor(idEmpresa:Int):List<Usuario>{
+        var reps = repository.findByEmissor(true)
         listValidation(reps)
         return reps
     }

@@ -16,7 +16,7 @@ class ContratoController(
     private val service: ContratoService
 ) {
     @PostMapping
-    fun cadastrar(contrato: Contrato): ResponseEntity<Unit?> {
+    fun cadastrar(contrato: Contrato): ResponseEntity<Contrato> {
         val contrato = service.cadastrar(contrato)
         return ResponseEntity.ok(contrato)
     }

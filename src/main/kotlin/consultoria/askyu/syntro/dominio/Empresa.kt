@@ -10,6 +10,8 @@ data class Empresa (
     var id: Int? = null,
     @Column(name = "nome_servico")
     var nomeServico: String? = null,
+    @Column(name = "nome_fantasia")
+    var nomeFantasia: String? = null,
     @Column(name = "area_atuacao")
     var areaAtuacao: String? = null,
     var fornecedor: Boolean? = null,
@@ -17,5 +19,5 @@ data class Empresa (
     @Column(name = "identificacao_fiscal")
     var identificacaoFiscal: String? = null,
     @Column(name = "tipo_identificacao_fiscal")
-    var tipoIdentificacaoFiscal: Int? = null,
+    var tipoIdentificacaoFiscal: Int? = null
 )
