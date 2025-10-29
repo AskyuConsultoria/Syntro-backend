@@ -2,8 +2,6 @@ package consultoria.askyu.syntro.service
 
 import consultoria.askyu.syntro.dominio.NotaFiscal
 import consultoria.askyu.syntro.dominio.Temp
-import consultoria.askyu.syntro.dto.TempDto
-import consultoria.askyu.syntro.repository.NotaFiscalRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -36,7 +34,7 @@ class OcrService(
         println("Iniciando OCR inteligente da nota fiscal...")
         val texto = extrairTextoPdf(pdfInputStream)
         println("Texto extraído: ${texto.length} caracteres")
-        val nota = inferirCamposNotaFiscal(texto)
+        val nota = inferirCamposNotaFiscal(texto, idUsuario)
         validarCamposObrigatorios(nota, uuid, idUsuario)
         nota.idUsuario = idUsuario
         nota.idEmpresa = usuarioService.buscarPorId(idUsuario).idEmpresa
@@ -100,7 +98,7 @@ class OcrService(
         }
     }
 
-    private fun inferirCamposNotaFiscal(texto: String): NotaFiscal {
+    private fun inferirCamposNotaFiscal(texto: String, idUsuario: Int): NotaFiscal {
         val nota = NotaFiscal()
 
         // Normaliza linhas (remove múltiplos espaços / NBSP etc)
@@ -251,7 +249,7 @@ class OcrService(
                 Regex("\\d+").find(linha)?.value?.toIntOrNull()?.let { nota.idContrato = it }
             }
         }
-
+        nota.idUsuario = idUsuario
         notaFiscalService.cadastrar(nota)
         println("OCR EXTRAIDO -> numero=${nota.numeroIdentificador} valor=${nota.valorTotal} emissao=${nota.dataEmissao} venc=${nota.dataVencimento} descricao=${nota.descricao} cnpjEmitente=${nota.cnpjEmitente} info=${nota.informacaoAdicional}")
         return nota
