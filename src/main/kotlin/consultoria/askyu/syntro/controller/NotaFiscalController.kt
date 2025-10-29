@@ -52,7 +52,7 @@ class NotaFiscalController(
     fun uploadNotaFiscal(@RequestBody file: MultipartFile, @RequestParam idUsuario: Int): ResponseEntity<String> {
         if (file.isEmpty) return ResponseEntity.badRequest().build()
         return try {
-            var uuid = UUID.randomUUID().toString()
+            val uuid = UUID.randomUUID().toString()
             val nota = ocrService.processarNotaFiscalv2(file.inputStream, uuid, idUsuario)
             s3Service.uploadArquivo(file)
             ResponseEntity.ok(nota)
@@ -67,6 +67,9 @@ class NotaFiscalController(
         if (file.isEmpty()) return ResponseEntity.badRequest().build()
         return try {
             val notas = ocrService.processarNotasFiscais(file, idUsuario)
+            file.forEach{ arquivo ->
+                s3Service.uploadArquivo(arquivo)
+            }
             ResponseEntity.ok(notas)
         } catch (e: Exception) {
             e.printStackTrace()

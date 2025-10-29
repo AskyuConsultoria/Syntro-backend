@@ -10,7 +10,11 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
     fun findByEmailAndSenhaEquals(email: String, senha:String): Usuario?
     fun findByNomeUsuarioAndSenhaEquals(email: String, senha:String): Usuario?
     fun findByEmailIgnoreCase(email:String?): Usuario?
-    fun findByIdEmpresaAndRepresentanteExterno(idEmpresa:Int, representante:Boolean): List<Usuario>
-    fun findByIdEmpresaAndRepresentanteInterno(idEmpresa:Int, representante:Boolean): List<Usuario>
+    fun findByIdEmpresaAndEmissor(idEmpresa:Int, emissor:Boolean): List<Usuario>
+    fun findByIdEmpresaAndAuditor(idEmpresa:Int, auditor:Boolean): List<Usuario>
     fun findByNomeUsuario(nome:String?): Usuario?
+    fun findByAuditor(auditor:Boolean): List<Usuario>
+    fun findByEmissor(emissor:Boolean): List<Usuario>
+    fun findByIdDepartamento(idDepartamento: Int): List<Usuario>
+    fun countByIdDepartamento(idDepartamento: Int): Int
 }

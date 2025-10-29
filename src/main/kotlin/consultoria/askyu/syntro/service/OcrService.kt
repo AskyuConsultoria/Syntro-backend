@@ -2,8 +2,6 @@ package consultoria.askyu.syntro.service
 
 import consultoria.askyu.syntro.dominio.NotaFiscal
 import consultoria.askyu.syntro.dominio.Temp
-import consultoria.askyu.syntro.dto.TempDto
-import consultoria.askyu.syntro.repository.NotaFiscalRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -32,12 +30,12 @@ class OcrService(
 ) {
 
     fun processarNotaFiscal(pdfInputStream: InputStream, uuid: String, idUsuario: Int): NotaFiscal {
-        tempService.add(Temp(null, uuid, "Um processamento de nota fiscal", idUsuario))
+        tempService.add(Temp(null, uuid, "Extraindo Dados da Nota Fiscal", idUsuario))
         println("Iniciando OCR inteligente da nota fiscal...")
         val texto = extrairTextoPdf(pdfInputStream)
         println("Texto extraído: ${texto.length} caracteres")
-        val nota = inferirCamposNotaFiscal(texto)
-        validarCamposObrigatorios(nota)
+        val nota = inferirCamposNotaFiscal(texto, idUsuario)
+        validarCamposObrigatorios(nota, uuid, idUsuario)
         nota.idUsuario = idUsuario
         nota.idEmpresa = usuarioService.buscarPorId(idUsuario).idEmpresa
         println("OCR concluído com sucesso")
@@ -100,7 +98,7 @@ class OcrService(
         }
     }
 
-    private fun inferirCamposNotaFiscal(texto: String): NotaFiscal {
+    private fun inferirCamposNotaFiscal(texto: String, idUsuario: Int): NotaFiscal {
         val nota = NotaFiscal()
 
         // Normaliza linhas (remove múltiplos espaços / NBSP etc)
@@ -131,7 +129,15 @@ class OcrService(
         // 2) percorre linhas com índice para poder olhar a linha seguinte
         for ((i, linha) in rawLines.withIndex()) {
             val lower = linha.lowercase()
-
+            if(lower.contains("Chave de Acesso da NFS-e") && i + 1 < rawLines.size){
+                val valores = rawLines[i + 1].replace("[^0-9/: \\-:]".toRegex(), " ")
+                val m = multiDateTimeRegex.find(valores)
+                if(m != null){
+                    try{
+                        nota.numeroIdentificador = m.groupValues[1]
+                    } catch (_: Exception) {}
+                }
+            }
             // --- Número da NFS-e + Competência + Data/Hora (cabeçalho em uma linha, valores na próxima)
             if (lower.contains("número da nfs-e") && i + 1 < rawLines.size) {
                 val valores = rawLines[i + 1].replace("[^0-9/: \\-:]".toRegex(), " ")
@@ -162,6 +168,7 @@ class OcrService(
                     }
                 }
             }
+            
 
             // --- Valor do Serviço (cabeçalho -> valor na linha seguinte)
             if (lower.contains("valor do serviço")) {
@@ -242,15 +249,18 @@ class OcrService(
                 Regex("\\d+").find(linha)?.value?.toIntOrNull()?.let { nota.idContrato = it }
             }
         }
-
-        // salva e debug
+        nota.idUsuario = idUsuario
+        nota.idEmpresa = usuarioService.buscarPorId(idUsuario).idEmpresa
         notaFiscalService.cadastrar(nota)
         println("OCR EXTRAIDO -> numero=${nota.numeroIdentificador} valor=${nota.valorTotal} emissao=${nota.dataEmissao} venc=${nota.dataVencimento} descricao=${nota.descricao} cnpjEmitente=${nota.cnpjEmitente} info=${nota.informacaoAdicional}")
         return nota
     }
 
 
-    private fun validarCamposObrigatorios(nota: NotaFiscal) {
+    private fun validarCamposObrigatorios(nota: NotaFiscal, uuid: String, idUsuario: Int) {
+        var log = tempService.buscarPorChave(uuid)
+        log.descricao = "Validando Campos da Nota fiscal"
+        tempService.add(log)
         val erros = mutableListOf<String>()
         if (nota.numeroIdentificador == null) erros.add("Número Identificador não encontrado")
         if (nota.valorTotal == null) erros.add("Valor Total não encontrado")

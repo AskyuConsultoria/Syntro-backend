@@ -34,8 +34,11 @@ data class NotaFiscal(
     var nomeMoeda: String? = null,
     @Column(name = "id_contrato")
     var idContrato: Int? = null,
+    @Column(name = "cnpj_emitente")
     var cnpjEmitente: String? = null,
+    @Column(name = "inscricao_municipal")
     var inscricaoMunicipal: String? = null,
+    @Column(name = "tipo_nota")
     var tipoNota: String? = null,
     @Column(name = "id_empresa")
     var idEmpresa: Int? = null,
