@@ -8,5 +8,5 @@ data class Departamento(
     @field:GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
     @Column(name = "nome_departamento")
-    var nomeDepartamento: String
+    var nomeDepartamento: String? = null
 )

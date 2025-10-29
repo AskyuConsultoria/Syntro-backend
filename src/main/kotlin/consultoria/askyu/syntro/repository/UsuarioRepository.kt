@@ -15,4 +15,6 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
     fun findByNomeUsuario(nome:String?): Usuario?
     fun findByAuditor(auditor:Boolean): List<Usuario>
     fun findByEmissor(emissor:Boolean): List<Usuario>
+    fun findByIdDepartamento(idDepartamento: Int): List<Usuario>
+    fun countByIdDepartamento(idDepartamento: Int): Int
 }

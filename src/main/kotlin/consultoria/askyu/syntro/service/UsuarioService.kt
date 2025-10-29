@@ -97,8 +97,9 @@ class UsuarioService(
                 "email" -> usuario.email = valor as String
                 "senha" -> usuario.senha = valor as String
                 "cargo" -> usuario.cargo = valor as String
-                "representanteInterno" -> usuario.auditor = valor as Boolean
-                "representanteExterno" -> usuario.emissor = valor as Boolean
+                "permissao" -> usuario.permissao = valor as String
+                "auditor" -> usuario.auditor = valor as Boolean
+                "emissor" -> usuario.emissor = valor as Boolean
                 "idDepartamento" -> usuario.idDepartamento = (valor as Number).toInt()
                 else -> throw ResponseStatusException(HttpStatusCode.valueOf(400), "Campo inválido: $campo")
             }
@@ -106,7 +107,6 @@ class UsuarioService(
 
         return repository.save(usuario)
     }
-
 
     fun String.isEmail(): Boolean {
         val regex = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$")
@@ -155,5 +155,18 @@ class UsuarioService(
 
         usuario.senha = passwordHasher.hash(novaSenha)
         cadastrar(usuario)
+    }
+
+    fun listarUsuariosPorDepartamento(idDepartamento: Int): List<Usuario> {
+        return repository.findByIdDepartamento(idDepartamento)
+    }
+
+    fun contarUsuariosPorDepartamento(idDepartamento: Int): Int {
+        return repository.countByIdDepartamento(idDepartamento)
+    }
+
+    fun contarServicosAtivosPorDepartamento(idDepartamento: Int): Int {
+        val usuarios = listarUsuariosPorDepartamento(idDepartamento)
+        return usuarios.count { it.permissao != null }
     }
 }
