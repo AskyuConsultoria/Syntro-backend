@@ -7,8 +7,8 @@ data class LoginResponse(
     var email: String? = null,
     var cargo: String? = null,
     var permissao: String? = null,
-    var representanteInterno: Boolean = false,
-    var representanteExterno: Boolean = false,
+    var auditor: Boolean = false,
+    var emissor: Boolean = false,
     var idDepartamento: Int? = null,
     var idEmpresa: Int? = null
 )
