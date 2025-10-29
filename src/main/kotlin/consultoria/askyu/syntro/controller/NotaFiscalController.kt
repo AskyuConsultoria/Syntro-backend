@@ -67,6 +67,9 @@ class NotaFiscalController(
         if (file.isEmpty()) return ResponseEntity.badRequest().build()
         return try {
             val notas = ocrService.processarNotasFiscais(file, idUsuario)
+            file.forEach{ arquivo ->
+                s3Service.uploadArquivo(arquivo)
+            }
             ResponseEntity.ok(notas)
         } catch (e: Exception) {
             e.printStackTrace()
