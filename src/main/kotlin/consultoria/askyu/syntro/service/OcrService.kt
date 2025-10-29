@@ -250,6 +250,7 @@ class OcrService(
             }
         }
         nota.idUsuario = idUsuario
+        nota.idEmpresa = usuarioService.buscarPorId(idUsuario).idEmpresa
         notaFiscalService.cadastrar(nota)
         println("OCR EXTRAIDO -> numero=${nota.numeroIdentificador} valor=${nota.valorTotal} emissao=${nota.dataEmissao} venc=${nota.dataVencimento} descricao=${nota.descricao} cnpjEmitente=${nota.cnpjEmitente} info=${nota.informacaoAdicional}")
         return nota
