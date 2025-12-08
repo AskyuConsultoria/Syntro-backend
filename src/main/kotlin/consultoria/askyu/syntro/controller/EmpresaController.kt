@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/empresas")
-class EmpresaController(
+class  EmpresaController(
     private val empresaService: EmpresaService
 ) {
 

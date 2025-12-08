@@ -20,4 +20,8 @@ class ContratoService(
     fun buscarPorId(id:Int): Contrato{
         return repository.findById(id).get()
     }
+
+    fun buscarTodos(): List<Contrato>{
+        return repository.findAll()
+    }
 }

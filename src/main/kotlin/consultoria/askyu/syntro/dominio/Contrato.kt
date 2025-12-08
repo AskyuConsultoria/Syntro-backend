@@ -23,5 +23,5 @@ data class Contrato (
     @Column(name = "id_departamento")
     var idDepartamento: Int? = null,
     @Column(name = "id_empresa")
-    var idEmpresa: Int? = null,
+        var idEmpresa: Int? = null,
 )

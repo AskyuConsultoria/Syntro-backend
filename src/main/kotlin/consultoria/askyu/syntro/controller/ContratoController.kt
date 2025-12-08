@@ -22,6 +22,12 @@ class ContratoController(
         return ResponseEntity.ok(contrato)
     }
 
+    @GetMapping("/contratos")
+    fun buscarContratos(): List<Contrato> {
+        var contratos = service.buscarTodos()
+        return contratos
+    }
+
     @GetMapping("/{idContrato}")
     fun buscarPorIdNota(@PathVariable idContrato: Int): ResponseEntity<Contrato> {
         var contrato = service.buscarPorId(idContrato)
