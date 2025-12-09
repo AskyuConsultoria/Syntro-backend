@@ -82,7 +82,7 @@ class NotaFiscalService(
         val notas = repository.findByDataEmissaoBetween(inicio, fim)
 
         notas.forEach { nota ->
-            if(listaUsuariosId.contains(nota.idUsuario)) {
+            if(!listaUsuariosId.contains(nota.idUsuario)) {
                 listaUsuariosId.add(nota.idUsuario!!)
             }
         }
