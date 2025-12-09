@@ -23,7 +23,7 @@ import kotlin.collections.forEach
 
 @Service
 class OcrService(
-    @Value("\${tesseract.ocr-path}") private val tessDataPath: String,
+    @Value("\${tesseract.tessdata-prefix}") private val tessDataPath: String,
     private val notaFiscalService: NotaFiscalService,
     private val tempService: TempService,
     private val usuarioService: UsuarioService
