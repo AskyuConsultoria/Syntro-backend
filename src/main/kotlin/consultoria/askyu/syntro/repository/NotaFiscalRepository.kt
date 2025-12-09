@@ -20,7 +20,8 @@ interface NotaFiscalRepository: JpaRepository<NotaFiscal, Int>{
     fun countByDataEmissaoBetweenAndIdUsuarioAndStatus(
         dataInicial: Timestamp,
         dataFinal: Timestamp,
-        status: Int,
         idUsuario: Int,
-    ):Int
+        status: Int,
+    ): Int
+
 }

@@ -91,10 +91,10 @@ class NotaFiscalService(
 
         listaUsuariosId.forEach { id ->
             val nomeUsuario = usuarioRepository.findById(id).get().nomeUsuario!!
-            val reprovadas = repository.countByDataEmissaoBetweenAndIdUsuarioAndStatus(inicio,fim, 4,id)
-            val aprovadas = repository.countByDataEmissaoBetweenAndIdUsuarioAndStatus(inicio,fim, 3,id)
-            val naoIniciadas = repository.countByDataEmissaoBetweenAndIdUsuarioAndStatus(inicio,fim, 1,id)
-            val emAndamento = repository.countByDataEmissaoBetweenAndIdUsuarioAndStatus(inicio,fim, 2,id)
+            val reprovadas = repository.countByDataEmissaoBetweenAndIdUsuarioAndStatus(inicio,fim, id,4)
+            val aprovadas = repository.countByDataEmissaoBetweenAndIdUsuarioAndStatus(inicio,fim, id,3)
+            val naoIniciadas = repository.countByDataEmissaoBetweenAndIdUsuarioAndStatus(inicio,fim, id,1)
+            val emAndamento = repository.countByDataEmissaoBetweenAndIdUsuarioAndStatus(inicio,fim, id,2)
             val dto = ChartDataDto(nomeUsuario, id, aprovadas,reprovadas,naoIniciadas, emAndamento)
             datas.add(dto)
         }
