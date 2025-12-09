@@ -124,4 +124,10 @@ class NotaFiscalController(
             ResponseEntity.badRequest().body(null)
         }
     }
+
+    @PostMapping("/cadastrar-mock")
+    fun cadastrarMock(@RequestBody notaFiscal: NotaFiscal): ResponseEntity<NotaFiscal> {
+        val novaNota = notaFiscalService.cadastrar(notaFiscal)
+        return ResponseEntity.ok(novaNota)
+    }
 }
