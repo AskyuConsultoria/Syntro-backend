@@ -21,6 +21,12 @@ class UsuarioController(
         return ResponseEntity.ok(novoUsuario)
     }
 
+    @PutMapping("/{id}")
+    fun mudarSenha(@PathVariable id: Int, @RequestParam novaSenha: String): ResponseEntity<Usuario> {
+        val novaSenha = usuarioService.mudarSenha(id, novaSenha)
+        return ResponseEntity.ok(novaSenha)
+    }
+
     @GetMapping
     fun buscarTodos(): ResponseEntity<List<Usuario>> {
         val usuarios = usuarioService.buscarTodos()

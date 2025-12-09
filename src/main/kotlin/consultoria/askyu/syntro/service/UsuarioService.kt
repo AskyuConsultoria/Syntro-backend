@@ -32,6 +32,12 @@ class UsuarioService(
         return repository.save(usuario)
     }
 
+    fun mudarSenha(idUsuario: Int, novaSenha: String): Usuario {
+        var usuario = repository.findById(idUsuario).get()
+        usuario.senha = passwordHasher.hash(novaSenha)
+        return repository.save(usuario)
+    }
+
     fun buscarTodos(): MutableList<Usuario>{
         val usuarios = repository.findAll()
         listValidation(usuarios)

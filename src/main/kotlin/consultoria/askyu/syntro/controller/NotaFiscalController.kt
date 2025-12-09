@@ -2,6 +2,7 @@ package consultoria.askyu.syntro.controller
 
 import consultoria.askyu.syntro.dominio.NotaFiscal
 import consultoria.askyu.syntro.dominio.Usuario
+import consultoria.askyu.syntro.dto.ChartDataDto
 import consultoria.askyu.syntro.service.NotaFiscalService
 import consultoria.askyu.syntro.service.OcrService
 import consultoria.askyu.syntro.service.S3Service
@@ -111,4 +112,16 @@ class NotaFiscalController(
         return ResponseEntity.ok(nota)
     }
 
+    @GetMapping("/periodo")
+    fun buscarPorPeriodo(
+        @RequestParam inicio: String,
+        @RequestParam fim: String
+    ): ResponseEntity<List<ChartDataDto>> {
+        return try {
+            ResponseEntity.ok(notaFiscalService.buscarPorPeriodo(inicio, fim))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ResponseEntity.badRequest().body(null)
+        }
     }
+}
