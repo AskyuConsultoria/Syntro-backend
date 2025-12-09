@@ -43,5 +43,10 @@ data class NotaFiscal(
     @Column(name = "id_empresa")
     var idEmpresa: Int? = null,
     @Column(name = "id_usuario")
-    var idUsuario: Int? = null
+    var idUsuario: Int? = null,
+    @Column
+    var status: Int? = null
+    // Adicionei o status como INT para evitar erros de normalização. A ideia é que sejam 0 não iniciadas, 1 em andamento, 2 finalizadas.
+    // Atrasadas ou a vencer são verificadas a partir de um endpoint temporal.
+
 )

@@ -5,10 +5,14 @@ import consultoria.askyu.syntro.dominio.Usuario
 import consultoria.askyu.syntro.service.NotaFiscalService
 import consultoria.askyu.syntro.service.OcrService
 import consultoria.askyu.syntro.service.S3Service
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.sql.Timestamp
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Controller
@@ -77,4 +81,34 @@ class NotaFiscalController(
         }
     }
 
-}
+
+
+
+    @GetMapping("/status/{status}")
+    fun buscarPorStatus(@PathVariable status: Int): ResponseEntity<List<NotaFiscal>> {
+        val notas = notaFiscalService.buscarPorStatus(status)
+        notaFiscalService.listValidation(notas!!)
+        return ResponseEntity.ok(notas)
+    }
+
+    @GetMapping("/data-vencimento/menor-que")
+    fun buscarPorDataVencimentoMenorQueData(@RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) data: LocalDateTime): ResponseEntity<List<NotaFiscal>> {
+        val notas = notaFiscalService.buscarPorDataVencimentoMenorQueData(data)
+        notaFiscalService.listValidation(notas!!)
+        return ResponseEntity.ok(notas)
+    }
+
+    @GetMapping("/data-vencimento/entre")
+    fun buscarPorDataVencimentoEmIntervalo(@RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) dataInicio: LocalDateTime,  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) dataFim: LocalDateTime): ResponseEntity<List<NotaFiscal>> {
+        val notas = notaFiscalService.buscarPorDataEmIntervalo(dataInicio, dataFim)
+        notaFiscalService.listValidation(notas!!)
+        return ResponseEntity.ok(notas)
+    }
+
+    @PutMapping("/status/{idNota}")
+    fun atualizarStatusDaNotaFiscal(@PathVariable idNota: Int, @RequestParam status: Int): ResponseEntity<NotaFiscal?> {
+        val nota = notaFiscalService.atualizarCampoStatus(idNota, status)
+        return ResponseEntity.ok(nota)
+    }
+
+    }
